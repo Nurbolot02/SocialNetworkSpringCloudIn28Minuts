@@ -1,5 +1,6 @@
 package com.ntg.socialnetworkspringcloudin28minuts.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -19,5 +20,6 @@ public class User {
     @Size(min = 3)
     private String name;
     @Past
+    @JsonProperty("birth_date")
     private LocalDate birthDate;
 }
