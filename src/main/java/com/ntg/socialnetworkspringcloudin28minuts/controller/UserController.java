@@ -4,6 +4,10 @@ import com.ntg.socialnetworkspringcloudin28minuts.exception.UserNotFoundExceptio
 import com.ntg.socialnetworkspringcloudin28minuts.model.User;
 import com.ntg.socialnetworkspringcloudin28minuts.service.abstracts.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,12 +34,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> findUserById(@PathVariable Long id){
+    public ResponseEntity<EntityModel<User>> findUserById(@PathVariable Long id){
         User user = userService.findUserById(id).orElse(null);
         if (user == null){
             throw new UserNotFoundException(String.format("user with id: %d not found", id));
         }
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        EntityModel<User> entityModel = EntityModel.of(user);
+        WebMvcLinkBuilder webMvcLinkBuilder = linkTo(methodOn(this.getClass()).getAllUsers());
+        entityModel.add(webMvcLinkBuilder.withRel("all-users"));
+        return new ResponseEntity<>(entityModel, HttpStatus.OK);
     }
 
     @PostMapping
